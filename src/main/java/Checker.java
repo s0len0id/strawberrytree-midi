@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 public class Checker {
 
-    public static final String APC_KEY_25 = "APC Key 25";
-    public static final String EXTERNAL_MIDI_PORT = "External MIDI Port";
+    private static final String APC_KEY_25 = "APC Key 25";
+    private static final String EXTERNAL_MIDI_PORT = "External MIDI Port";
 
     public static void main(String... args) throws MidiUnavailableException, InvalidMidiDataException {
         Checker checker = new Checker();
@@ -32,18 +32,18 @@ public class Checker {
         apcDevice.close();
     }
 
-    private static boolean testAPC(MidiDevice.Info info) {
+    private static boolean testAPCMidiOut(MidiDevice.Info info) {
         return (info.getName().contains(APC_KEY_25)) && info.getDescription().contains(EXTERNAL_MIDI_PORT);
     }
 
 
     private String toString(MidiDevice.Info[] infos) {
-        StringBuffer pretty = new StringBuffer();
+        StringBuilder pretty = new StringBuilder();
         for(MidiDevice.Info info : infos){
-            pretty.append("\n\nname = " + info.getName());
-            pretty.append("\ndesc = " + info.getDescription());
-            pretty.append("\nvendor = " + info.getVendor());
-            pretty.append("\nversion = " + info.getVersion());
+            pretty.append("\n\nname = ").append(info.getName())
+                .append("\ndesc = ").append(info.getDescription())
+                .append("\nvendor = ").append(info.getVendor())
+                .append("\nversion = ").append(info.getVersion());
         }
         return pretty.toString();
     }
@@ -62,18 +62,16 @@ public class Checker {
         for (MidiDevice device : devices) {
             device.open();
             final List<Receiver> receivers = device.getReceivers();
-            receivers.stream()
-                    .forEach(receiver -> System.out.println("receiver = " + receiver));
+            receivers.forEach(receiver -> System.out.println("receiver = " + receiver));
             final List<Transmitter> transmitters = device.getTransmitters();
-            transmitters.stream()
-                    .forEach(transmitter -> System.out.println("transmitter = " + transmitter));
+            transmitters.forEach(transmitter -> System.out.println("transmitter = " + transmitter));
             device.close();
         }
     }
 
     private MidiDevice getAPC(MidiDevice.Info[] infos) throws MidiUnavailableException {
         List<MidiDevice.Info> infosAPC = Arrays.stream(infos)
-                .filter(Checker::testAPC)
+                .filter(Checker::testAPCMidiOut)
                 .collect(Collectors.toList());
         if (infosAPC.size()!=1) {
             throw new RuntimeException("Require 1 connected APC, but detected: " + infosAPC.size());
