@@ -15,7 +15,11 @@ public class Position {
         y = builder.y;
     }
 
-    public static Builder newBuilder() {
+    public String toString() {
+        return ("(x,y) = " + getX() + "," + getY());
+    }
+
+    static Builder newBuilder() {
         return new Builder();
     }
 
@@ -26,15 +30,15 @@ public class Position {
         return builder;
     }
 
-    public int getX() {
+    private int getX() {
         return x;
     }
 
-    public int getY() {
+    private int getY() {
         return y;
     }
 
-    public static int toNote(Position position) {
+    static int toNote(Position position) {
         return position.getY()*8+position.getX();
     }
 
@@ -51,17 +55,17 @@ public class Position {
         private Builder() {
         }
 
-        public Builder setX(int x) {
+        Builder setX(int x) {
             this.x = x;
             return this;
         }
 
-        public Builder setY(int y) {
+        Builder setY(int y) {
             this.y = y;
             return this;
         }
 
-        public Position build() {
+        Position build() {
             return new Position(this);
         }
     }

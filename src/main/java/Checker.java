@@ -1,3 +1,6 @@
+import apc.Color;
+import apc.Grid;
+
 import javax.sound.midi.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,27 +12,43 @@ public class Checker {
     private static final String APC_KEY_25 = "APC Key 25";
     private static final String EXTERNAL_MIDI_PORT = "External MIDI Port";
 
-    public static void main(String... args) throws MidiUnavailableException, InvalidMidiDataException {
+    public static void main(String... args) throws MidiUnavailableException {
         Checker checker = new Checker();
-
         MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
-        System.out.println("MidiDeviceInfos:" + checker.toString(infos));
+
+        //        System.out.println("MidiDeviceInfos:" + checker.toString(infos));
 //        List<MidiDevice> midiDevices = checker.getDevices(infos);
 //          soutv printDevices(midiDevices);
 
-        MidiDevice apcDevice = checker.getAPC(infos);
-        apcDevice.open();
-        Receiver receiver = apcDevice.getReceiver();
+        try(MidiDevice apcDevice = checker.getAPC(infos)) {
+            apcDevice.open();
+            Receiver receiver = apcDevice.getReceiver();
+//            checker.lightRow(receiver);
+            checker.lightColumn(receiver);
+        }
 
+    }
+
+
+    private void lightRow(Receiver receiver) {
+        Grid grid = new Grid(receiver);
+        grid.setLedRow(0, Color.OFF);
+    }
+
+    private void lightColumn(Receiver receiver) {
+        Grid grid = new Grid(receiver);
+        grid.setLedColumn(7, Color.RED_BLINK);
+    }
+
+    private void lightLed22(Receiver receiver) throws InvalidMidiDataException {
         ShortMessage myMsg = new ShortMessage();
         // Start playing the note Middle C (60),
         // moderately loud (velocity = 93).
         int note = 22;
-        int velocity = 3; //
+        int velocity = 0; //
         myMsg.setMessage(ShortMessage.NOTE_ON, 0, note, velocity );
         long timeStamp = -1;
         receiver.send(myMsg, timeStamp);
-        apcDevice.close();
     }
 
     private static boolean testAPCMidiOut(MidiDevice.Info info) {

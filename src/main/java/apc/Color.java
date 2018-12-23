@@ -7,7 +7,7 @@ public enum Color {
     RED(3),
     RED_BLINK(4),
     YELLOW(5),
-    YELLO_BLINK(6);
+    YELLOW_BLINK(6);
 
     private int velocity;
 
